@@ -1,9 +1,9 @@
 package com.dxmy.template.config;
 
-import cn.hutool.core.util.ArrayUtil;
 import com.dxmy.template.common.auth.AuthInterceptor;
 import com.dxmy.template.common.converter.CustomObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.dromara.hutool.core.array.ArrayUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
