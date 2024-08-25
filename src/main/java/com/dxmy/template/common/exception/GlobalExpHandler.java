@@ -4,9 +4,14 @@ import com.dxmy.template.common.response.Code;
 import com.dxmy.template.common.response.R;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.ibatis.exceptions.TooManyResultsException;
+import org.apache.ibatis.reflection.ReflectionException;
+import org.mybatis.spring.MyBatisSystemException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingRequestValueException;
@@ -14,8 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
-
-import java.sql.SQLException;
 
 /**
  * 全局异常处理类
@@ -108,23 +111,30 @@ public class GlobalExpHandler {
     }
 
     /**
-     * 持久化异常处理
+     * 数据访问异常处理
      */
-    @ExceptionHandler(PersistenceException.class)
+    @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> persistenceExceptionHandler(PersistenceException e) {
-        log.error("[持久化异常] {}", e.getMessage(), e);
-        Code errorCode = Code.SYSTEM_ERROR;
-        return R.error(errorCode, errorCode.getDesc());
-    }
+    public R<Object> dataAccessExceptionHandler(DataAccessException e) {
+        String errorType = "[数据访问异常] 未分类异常";
+        String errorMsg = e.getMessage();
 
-    /**
-     * SQL 异常处理
-     */
-    @ExceptionHandler(SQLException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> sqlExceptionHandler(SQLException e) {
-        log.error("[SQL 异常] {}", e.getMessage(), e);
+        if (e instanceof DuplicateKeyException)
+            errorType = "[数据库异常] 数据键重复";
+        if (e instanceof BadSqlGrammarException)
+            errorType = "[JDBC 异常] SQL 语法错误";
+        if (e instanceof MyBatisSystemException) {
+            Throwable cause = e.getRootCause();
+            errorType = "[MyBatis 异常] 未分类异常";
+            errorMsg = cause != null ? cause.getMessage() : errorMsg;
+
+            if (cause instanceof TooManyResultsException)
+                errorType = "[MyBatis 异常] 查询结果过多";
+            if (cause instanceof ReflectionException)
+                errorType = "[MyBatis 异常] 反射异常";
+        }
+
+        log.error("{}: {}", errorType, errorMsg, e);
         Code errorCode = Code.SYSTEM_ERROR;
         return R.error(errorCode, errorCode.getDesc());
     }
