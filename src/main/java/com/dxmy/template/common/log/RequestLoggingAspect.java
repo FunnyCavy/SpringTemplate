@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.dromara.hutool.core.text.StrUtil;
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
@@ -44,9 +45,8 @@ public class RequestLoggingAspect {
         String reqId = UUID.randomUUID().toString();
         String reqMethod = req.getMethod();
         String reqURI = req.getRequestURI();
-        String reqParams = getReqParams(req.getParameterMap());
-        String reqBody = req instanceof ContentCachingRequestWrapper ?
-                new String(((ContentCachingRequestWrapper) req).getContentAsByteArray()) : "<No Body>";
+        String reqParams = getReqParams(req);
+        String reqBody = getReqBody(req);
         String reqIp = req.getRemoteAddr();
 
         // 打印开始日志
@@ -85,15 +85,26 @@ public class RequestLoggingAspect {
     /**
      * 获取请求参数
      */
-    private String getReqParams(Map<String, String[]> paramMap) {
+    private String getReqParams(HttpServletRequest req) {
+        Map<String, String[]> paramMap = req.getParameterMap();
         if (paramMap.isEmpty())
-            return "<No Params>";
+            return "<NoParams>";
         return paramMap.entrySet().stream().map(entry -> {
             String key = entry.getKey();
             String[] value = entry.getValue();
             String formattedValue = (value.length == 1) ? value[0] : Arrays.toString(value);
             return key + "=" + formattedValue;
         }).collect(Collectors.joining(", ", "(", ")"));
+    }
+
+    /**
+     * 获取请求体
+     */
+    private String getReqBody(HttpServletRequest req) {
+        String reqBody = null;
+        if (req instanceof ContentCachingRequestWrapper requestWrapper)
+            reqBody = requestWrapper.getContentAsString();
+        return StrUtil.isBlank(reqBody) ? "<NoBody>" : reqBody;
     }
 
 }
