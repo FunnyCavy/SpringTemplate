@@ -1,4 +1,4 @@
-package com.dxmy.template.common.log;
+package com.dxmy.template.common.log.method;
 
 import java.lang.annotation.*;
 

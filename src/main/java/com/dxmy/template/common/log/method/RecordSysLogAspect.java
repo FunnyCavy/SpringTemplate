@@ -1,4 +1,4 @@
-package com.dxmy.template.common.log;
+package com.dxmy.template.common.log.method;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

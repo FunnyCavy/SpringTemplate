@@ -1,4 +1,4 @@
-package com.dxmy.template.common.log;
+package com.dxmy.template.common.log.request;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

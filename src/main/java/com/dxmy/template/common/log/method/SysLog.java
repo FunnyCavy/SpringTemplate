@@ -1,4 +1,4 @@
-package com.dxmy.template.common.log;
+package com.dxmy.template.common.log.method;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
