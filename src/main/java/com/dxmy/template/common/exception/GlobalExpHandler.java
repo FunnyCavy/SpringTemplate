@@ -105,7 +105,10 @@ public class GlobalExpHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> nullPointerExceptionHandler(NullPointerException e) {
-        log.error("[空指针异常] {}", e.getMessage(), e);
+        StackTraceElement traceElement = e.getStackTrace()[0];
+        String location = traceElement.getClassName() + "." + traceElement.getMethodName() +
+                "(" + traceElement.getFileName() + ":" + traceElement.getLineNumber() + ")";
+        log.error("[空指针异常] 定位: {}", location, e);
         Code errorCode = Code.SYSTEM_ERROR;
         return R.error(errorCode, errorCode.getDesc());
     }
