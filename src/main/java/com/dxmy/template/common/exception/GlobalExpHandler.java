@@ -2,6 +2,10 @@ package com.dxmy.template.common.exception;
 
 import com.dxmy.template.common.response.Code;
 import com.dxmy.template.common.response.R;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.TooManyResultsException;
@@ -138,6 +142,26 @@ public class GlobalExpHandler {
         }
 
         log.error("{}: {}", errorType, errorMsg, e);
+        Code errorCode = Code.SYSTEM_ERROR;
+        return R.error(errorCode, errorCode.getDesc());
+    }
+
+    /**
+     * JSON 相关异常处理
+     */
+    @ExceptionHandler(JsonProcessingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public R<Object> jsonProcessingExceptionHandler(JsonProcessingException e) {
+        String errorType = "[JSON 异常] 未分类异常";
+
+        if (e instanceof JsonParseException)
+            errorType = "[JSON 反序列化异常] 解析失败";
+        if (e instanceof JsonMappingException)
+            errorType = "[JSON 反序列化异常] 映射到对象失败";
+        if (e instanceof InvalidDefinitionException)
+            errorType = "[JSON 异常] 无法处理的类定义";
+
+        log.error("{}: {}", errorType, e.getMessage(), e);
         Code errorCode = Code.SYSTEM_ERROR;
         return R.error(errorCode, errorCode.getDesc());
     }
