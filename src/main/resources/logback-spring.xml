@@ -5,7 +5,7 @@
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
     <!-- 日志格式 -->
     <property name="CONSOLE_LOG_PATTERN"
-              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%5p) %clr(${PID:- }){magenta} --- [%15.15t] ${LOG_CORRELATION_PATTERN:-}%clr(%-40.40logger{39}){cyan} : %m%n%wEx"/>
     <property name="FILE_LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] ${LOG_CORRELATION_PATTERN:-}%-40.40logger{39} : %m%n%wEx"/>
 
@@ -16,12 +16,15 @@
         </encoder>
     </appender>
 
-    <!-- 文件输出 - 非 ERROR 级别日志 -->
+    <!-- 文件输出 - INFO / WARN 级别日志 -->
     <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
-        <!-- 处理非 ERROR 级别日志 -->
+        <!-- 处理 INFO / WARN 级别日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>DENY</onMatch>
@@ -40,12 +43,12 @@
         </rollingPolicy>
     </appender>
 
-    <!-- 文件输出 - 仅 ERROR 级别日志 -->
+    <!-- 文件输出 - ERROR 级别日志 -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
-        <!-- 仅处理 ERROR 级别日志 -->
+        <!-- 处理 ERROR 级别日志 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
@@ -88,9 +91,9 @@
     <root level="INFO">
         <!-- 控制台输出 - 全部日志 -->
         <appender-ref ref="STDOUT"/>
-        <!-- 异步文件输出 - 非 ERROR 级别日志 -->
+        <!-- 异步文件输出 - INFO / WARN 级别日志 -->
         <appender-ref ref="ASYNC_FILE_INFO"/>
-        <!-- 异步文件输出 - 仅 ERROR 级别日志 -->
+        <!-- 异步文件输出 - ERROR 级别日志 -->
         <appender-ref ref="ASYNC_FILE_ERROR"/>
     </root>
 </configuration>
