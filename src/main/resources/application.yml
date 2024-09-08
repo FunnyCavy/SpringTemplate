@@ -56,4 +56,5 @@ logging:
 
 app:
   auth:
-    skip-auth-paths: /open/**
+    skip-auth-paths:
+      - /open/**

@@ -2,9 +2,11 @@ package com.dxmy.template.config;
 
 import com.dxmy.template.common.auth.AuthInterceptor;
 import com.dxmy.template.common.converter.CustomObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.dromara.hutool.core.array.ArrayUtil;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -16,26 +18,29 @@ import java.util.List;
 /**
  * Web 配置
  */
+@Slf4j
 @Configuration
-@RequiredArgsConstructor
+@ConfigurationProperties("app.auth")
 public class WebConfig implements WebMvcConfigurer {
 
-    /** 鉴权拦截器 */
-    private final AuthInterceptor authInterceptor;
-
     /** API 文档相关路径 */
-    private final String[] apiDocPaths = {
+    private static final List<String> apiDocPaths = List.of(
             "/doc.html",
             "/swagger-ui.html",
             "/swagger-resources/**",
             "/v2/api-docs",
             "/v3/api-docs",
-            "/webjars/**",
-    };
+            "/webjars/**"
+    );
 
     /** 无需鉴权的接口路径 */
-    @Value("${app.auth.skip-auth-paths}")
-    private String[] skipAuthPaths;
+    @Getter
+    @Setter
+    private List<String> skipAuthPaths;
+
+    /** 鉴权拦截器 */
+    @Resource
+    private AuthInterceptor authInterceptor;
 
     /**
      * 添加拦截器
@@ -44,7 +49,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns(ArrayUtil.addAll(apiDocPaths, skipAuthPaths));
+                .excludePathPatterns(apiDocPaths)
+                .excludePathPatterns(skipAuthPaths);
+        log.info("[鉴权拦截器] 配置成功, 排除路径: {}", String.join(", ", skipAuthPaths));
     }
 
     /**
