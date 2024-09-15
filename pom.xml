@@ -22,9 +22,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <redisson.version>3.34.1</redisson.version>
         <minio.version>8.5.11</minio.version>
-        <hutool.version>6.0.0-M15</hutool.version>
         <knife4j.version>4.5.0</knife4j.version>
+        <hutool.version>6.0.0-M15</hutool.version>
     </properties>
 
     <dependencies>
@@ -83,11 +84,25 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
+        <!-- Redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
+
         <!-- MinIO -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
+        </dependency>
+
+        <!-- Knife4j -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
         </dependency>
 
         <!-- Lombok -->
@@ -101,13 +116,6 @@
             <groupId>org.dromara.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool.version}</version>
-        </dependency>
-
-        <!-- Knife4j -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <version>${knife4j.version}</version>
         </dependency>
     </dependencies>
 
