@@ -58,7 +58,7 @@ public class SysLog extends Model<SysLog> {
     private String exception;
 
     @Schema(name = "操作者 ID", example = "1")
-    private String operatorId;
+    private Long operatorId;
 
     @Schema(name = "操作完成时间", example = "2024-01-01 00:00:00")
     private LocalDateTime completionTime;
@@ -77,7 +77,7 @@ public class SysLog extends Model<SysLog> {
         `request_uri` VARCHAR(255) NOT NULL COMMENT '请求 URI',
         `cost_time` BIGINT NOT NULL COMMENT '请求耗时',
         `exception` TEXT COMMENT '异常信息',
-        `operator_id` VARCHAR(255) COMMENT '操作者 ID',
+        `operator_id` BIGINT COMMENT '操作者 ID',
         `completion_time` DATETIME NOT NULL COMMENT '操作完成时间',
         INDEX `idx_operator_id` (`operator_id`),
         INDEX `idx_completion_time` (`completion_time`)

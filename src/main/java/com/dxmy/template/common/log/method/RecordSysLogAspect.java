@@ -1,56 +1,47 @@
 package com.dxmy.template.common.log.method;
 
+import com.dxmy.template.common.auth.UserContext;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 
 /**
  * 记录操作日志切面
  */
-@Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class RecordSysLogAspect {
 
     /** 日志类型标识 */
-    private static final Integer NORMAL_LOG_TYPE = 0;
-    private static final Integer EXCEPTION_LOG_TYPE = 9;
+    private static final int LOG_TYPE_NORMAL = 0;
+    private static final int LOG_TYPE_EXCEPTION = 1;
 
-    @SneakyThrows
+    @Resource
+    private HttpServletRequest request;
+
     @Around("@annotation(recordSysLog)")
-    public Object recordSysLog(ProceedingJoinPoint joinPoint, RecordSysLog recordSysLog) {
+    public Object recordSysLog(ProceedingJoinPoint joinPoint, RecordSysLog recordSysLog) throws Throwable {
         // 调用方法相关
         String logTitle = recordSysLog.value();
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = joinPoint.getSignature().getName();
         Object[] methodArgs = joinPoint.getArgs();
 
-        // 请求相关
-        ServletRequestAttributes reqAttrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest req = reqAttrs.getRequest();
-        String reqMethod = req.getMethod();
-        String reqURI = req.getRequestURI();
-
         // 执行方法相关
         Object result = null;
-        Integer logType = NORMAL_LOG_TYPE;
         String exceptionMessage = null;
+        int logType = LOG_TYPE_NORMAL;
         long startTime = System.currentTimeMillis();
         try {
             result = joinPoint.proceed();
         } catch (Throwable throwable) {
-            logType = EXCEPTION_LOG_TYPE;
             exceptionMessage = throwable.getMessage();
+            logType = LOG_TYPE_EXCEPTION;
             throw throwable;
         } finally {
             long costTime = System.currentTimeMillis() - startTime;
@@ -63,11 +54,11 @@ public class RecordSysLogAspect {
                   .methodName(methodName)
                   .methodArgs(methodArgs)
                   .methodReturn(result)
-                  .requestMethod(reqMethod)
-                  .requestUri(reqURI)
+                  .requestMethod(request.getMethod())
+                  .requestUri(request.getRequestURI())
                   .costTime(costTime)
                   .exception(exceptionMessage)
-                  .operatorId(req.getRemoteUser())  // TODO: 获取操作者 ID
+                  .operatorId(UserContext.getCurrentUserId())
                   .completionTime(LocalDateTime.now())
                   .build()
                   .insert();
