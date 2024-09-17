@@ -3,18 +3,12 @@ package com.dxmy.template.common.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 /**
  * 返回结果
  */
 @Data
 @AllArgsConstructor
-public class R<T> implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class R<T> {
 
     private Integer code;
     private T data;
