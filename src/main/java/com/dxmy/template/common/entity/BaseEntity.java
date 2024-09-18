@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 /**
- * 实体抽象基类
+ * 实体基类
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@Schema(name = "实体基类")
 public abstract class BaseEntity<T extends Model<?>> extends Model<T> {
 
     @Schema(name = "主键")
