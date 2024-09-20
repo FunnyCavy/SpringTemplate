@@ -47,7 +47,8 @@ public class JacksonConfig {
                 .deserializerByType(LocalDate.class, new LocalDateDeserializer(DATE_FORMATTER))
                 .deserializerByType(LocalTime.class, new LocalTimeDeserializer(TIME_FORMATTER))
                 .deserializerByType(LocalDateTime.class, new LocalDateTimeDeserializer(DATETIME_FORMATTER))
-                // 全局配置
+                .simpleDateFormat(DATETIME_FORMAT)
+                // 其他全局配置
                 .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
     }
