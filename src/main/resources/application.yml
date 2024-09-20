@@ -20,6 +20,10 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:guest}
     password: ${RABBITMQ_PASSWORD:guest}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30m
   servlet:
     multipart:
       max-request-size: 100MB
@@ -58,3 +62,8 @@ app:
   auth:
     skip-auth-paths:
       - /open/**
+  cache:
+    time-to-live:
+      user: 30m
+      role: 30m
+      permission: 30m
