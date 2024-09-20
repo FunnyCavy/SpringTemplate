@@ -14,13 +14,17 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "minio")
 public class MinioConfig {
 
-    /** MinIO 端点 */
-    private String endpoint;
+    /** MinIO 主机 */
+    private String host;
+    /** MinIO 端口 */
+    private Integer port;
+    /** 是否使用 HTTPS */
+    private Boolean secure;
     /** MinIO 访问密钥 */
     private String accessKey;
     /** MinIO 密钥 */
     private String secretKey;
-    /** MinIO 存储桶名称 */
+    /** 使用的存储桶名称 */
     private String bucketName;
 
     /**
@@ -30,7 +34,7 @@ public class MinioConfig {
     public MinioClient minioClient() {
         return MinioClient
                 .builder()
-                .endpoint(endpoint)
+                .endpoint(host, port, secure)
                 .credentials(accessKey, secretKey)
                 .build();
     }

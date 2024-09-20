@@ -43,7 +43,9 @@ mybatis-plus:
       logic-delete-value: 1
 
 minio:
-  endpoint: http://${MINIO_HOST:localhost}:${MINIO_PORT:9000}
+  host: ${MINIO_HOST:localhost}
+  port: ${MINIO_PORT:9000}
+  secure: false
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin}
   bucket-name: ${MINIO_BUCKET}
