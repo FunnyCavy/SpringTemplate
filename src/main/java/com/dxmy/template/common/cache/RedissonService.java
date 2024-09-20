@@ -1,6 +1,6 @@
 package com.dxmy.template.common.cache;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.Resource;
 import org.redisson.api.*;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +10,10 @@ import java.time.Duration;
  * Redis 服务 - Redisson 实现
  */
 @Service
-@RequiredArgsConstructor
 public class RedissonService implements RedisService {
 
-    private final RedissonClient redissonClient;
+    @Resource
+    private RedissonClient redissonClient;
 
     @Override
     public <T> void setValue(String key, T value) {

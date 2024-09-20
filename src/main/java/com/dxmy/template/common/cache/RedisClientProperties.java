@@ -12,7 +12,8 @@ public class RedisClientProperties {
 
     private String host;
     private Integer port;
-    private String password = null;
+    private String username;
+    private String password;
     private Integer database = 0;
     private Integer timeout = 5000;
     private RedissonProperties redisson = new RedissonProperties();

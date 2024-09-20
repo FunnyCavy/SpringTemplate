@@ -7,6 +7,7 @@ import org.redisson.config.Config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Redis 客户端配置
@@ -22,7 +23,8 @@ public class RedisClientConfig {
         config.setCodec(new JsonJacksonCodec())
               .useSingleServer()
               .setAddress("redis://" + properties.getHost() + ":" + properties.getPort())
-              .setPassword(properties.getPassword())  // 未设置密码需注释此行
+              .setUsername(StringUtils.hasText(properties.getUsername()) ? properties.getUsername() : null)
+              .setPassword(StringUtils.hasText(properties.getPassword()) ? properties.getPassword() : null)
               .setDatabase(properties.getDatabase())
               .setConnectTimeout(properties.getTimeout())
               .setConnectionPoolSize(properties.getRedisson().getPoolSize())
