@@ -1,7 +1,8 @@
 package com.dxmy.template.config;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,21 +14,20 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisPlusConfig {
 
     /**
-     * 配置拦截器
+     * 配置功能增强插件
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 创建分页拦截器
-        PaginationInnerInterceptor innerInterceptor = new PaginationInnerInterceptor() {
-            @Override
-            protected void handlerOverflow(IPage<?> page) {
-                // 当前页大于最大页时返回最后一页
-                page.setCurrent(page.getPages());
-            }
-        };
-        // 添加分页拦截器
-        interceptor.addInnerInterceptor(innerInterceptor);
+
+        // 添加分页插件, 配置数据库类型, 同时配置在溢出总页数时返回第一页
+        PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor(DbType.MYSQL);
+        paginationInterceptor.setOverflow(true);
+        interceptor.addInnerInterceptor(paginationInterceptor);
+
+        // 添加防全表更新与删除插件
+        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+
         return interceptor;
     }
 
