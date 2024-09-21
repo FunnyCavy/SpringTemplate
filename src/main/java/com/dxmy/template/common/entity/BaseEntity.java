@@ -23,8 +23,8 @@ public abstract class BaseEntity<T extends Model<?>> extends Model<T> {
     @Schema(name = "更新时间")
     private LocalDateTime updateTime;
 
-    @JsonIgnore
     @Schema(name = "逻辑删除")
+    @JsonIgnore
     private Integer isDeleted;
 
 }
